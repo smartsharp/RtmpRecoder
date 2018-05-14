@@ -8,6 +8,7 @@ import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.os.Binder;
 import android.os.Environment;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.widget.Toast;
 
@@ -22,6 +23,17 @@ public class RecordScreenService extends Service {
     private VirtualDisplay virtualDisplay;
 
     public RecordScreenService() {
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        HandlerThread serviceThread = new HandlerThread("service_thread",
+                android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        serviceThread.start();
+        running = false;
+        mediaRecorder = new MediaRecorder();
     }
 
     @Override
