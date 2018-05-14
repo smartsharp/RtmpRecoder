@@ -10,6 +10,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -33,10 +34,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class RecordActivity extends Activity implements OnClickListener {
+public class RecordActivity extends AppCompatActivity implements OnClickListener {
 
-    private final static String CLASS_LABEL = "RecordActivity";
+    private final static String CLASS_LABEL = "zhanghb/RecordActivity";
     private final static String LOG_TAG = CLASS_LABEL;
+    private final static String TAG = CLASS_LABEL;
     /* The number of seconds in the continuous record loop (or 0 to disable loop). */
     final int RECORD_LENGTH = 0;
     /* layout setting */
@@ -161,7 +163,7 @@ public class RecordActivity extends Activity implements OnClickListener {
     //---------------------------------------
     private void initRecorder() {
 
-        Log.w(LOG_TAG, "init recorder");
+        Log.d(LOG_TAG, "init recorder: "+RECORD_LENGTH);
 
         if (RECORD_LENGTH > 0) {
             imagesIndex = 0;
@@ -198,11 +200,12 @@ public class RecordActivity extends Activity implements OnClickListener {
         try {
             recorder.start();
             startTime = System.currentTimeMillis();
-            recording = true;
             audioThread.start();
+            recording = true;
 
         } catch (FFmpegFrameRecorder.Exception e) {
             e.printStackTrace();
+            Log.e(TAG, "startRecording exception "+e+", "+Log.getStackTraceString(e));
         }
     }
 
@@ -268,6 +271,7 @@ public class RecordActivity extends Activity implements OnClickListener {
                 recorder.release();
             } catch (FFmpegFrameRecorder.Exception e) {
                 e.printStackTrace();
+                Log.e(TAG, "stopRecording exception "+e+", "+Log.getStackTraceString(e));
             }
             recorder = null;
 
@@ -292,15 +296,16 @@ public class RecordActivity extends Activity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
+        Log.i(TAG, "onClick: "+recording);
         if (!recording) {
             startRecording();
             Log.w(LOG_TAG, "Start Button Pushed");
-            btnRecorderControl.setText("Stop");
+            if(recording) btnRecorderControl.setText("Stop");
         } else {
             // This will trigger the audio recording loop to stop and then set isRecorderStart = false;
             stopRecording();
             Log.w(LOG_TAG, "Stop Button Pushed");
-            btnRecorderControl.setText("Start");
+            if(!recording) btnRecorderControl.setText("Start");
         }
     }
 

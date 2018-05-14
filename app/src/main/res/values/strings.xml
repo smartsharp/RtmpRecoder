@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">RtmpRecorder</string>
     <string name="title_activity_record">RecordActivity</string>
+    <string name="title_activity_record_screen">RecordScreenActivity</string>
+    <string name="start_record">开始录制</string>
+    <string name="stop_record">停止录制</string>
 </resources>
