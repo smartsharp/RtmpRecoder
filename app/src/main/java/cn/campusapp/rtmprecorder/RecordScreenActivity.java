@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -18,6 +19,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
+
+import java.io.File;
 
 
 public class RecordScreenActivity extends AppCompatActivity implements OnClickListener {
@@ -59,6 +63,7 @@ public class RecordScreenActivity extends AppCompatActivity implements OnClickLi
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
         unbindService(mConnection);
         super.onDestroy();
     }
@@ -75,11 +80,14 @@ public class RecordScreenActivity extends AppCompatActivity implements OnClickLi
                 RecordScreenService.RecordScreenBinder binder =
                         (RecordScreenService.RecordScreenBinder) service;
                 mService = binder.getRecordService();
+                if(mService != null){
+                    if(mService.isRunning()) {
+                        btnControl.setText(R.string.stop_record);
+                    }
+                    btnControl.setEnabled(true);
+                }
             }catch (Exception e){
                 Log.e(TAG, "onServiceConnected exception "+e+","+Log.getStackTraceString(e));
-            }
-            if(mService != null){
-                btnControl.setEnabled(true);
             }
         }
 
@@ -114,11 +122,40 @@ public class RecordScreenActivity extends AppCompatActivity implements OnClickLi
             int densityDpi = mDisplayMetrics.densityDpi;
             Log.d(TAG,"Screen Ratio: ["+width+"x"+height+"],density="+density+",densityDpi="+densityDpi);
             mService.setDispParams(width, height, densityDpi);
+            if(ffmpeg_link != null) {
+                mService.setOutputUrl(ffmpeg_link);
+            }else {
+                mService.setOutputUrl(getSavedFileUrl());
+            }
             mService.setMediaProjection(projectionManager.getMediaProjection(resultCode, data));
             mService.startRecord();
             if (mService.isRunning()) {
                 btnControl.setText(R.string.stop_record);
             }
+        }
+    }
+
+    public String getSavedFileUrl() {
+        String filepath = getsaveDirectory() + System.currentTimeMillis() + ".mp4";
+        return "file://"+filepath;
+    }
+
+    public String getsaveDirectory() {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            String rootDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ScreenRecord" + "/";
+
+            File file = new File(rootDir);
+            if (!file.exists()) {
+                if (!file.mkdirs()) {
+                    return null;
+                }
+            }
+
+            Toast.makeText(getApplicationContext(), rootDir, Toast.LENGTH_SHORT).show();
+
+            return rootDir;
+        } else {
+            return null;
         }
     }
 

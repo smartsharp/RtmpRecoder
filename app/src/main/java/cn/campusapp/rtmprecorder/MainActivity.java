@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String STREAM_URL = "rtmp://192.168.30.178/live/livestream";
+    private static final String STREAM_URL = "rtmp://192.168.30.77/live/livestream";
 
 
 

@@ -1,3 +1,18 @@
+2018.5.15  
+1. 使用 ImageReader 的 Surface 作为录屏输入，然后将输入数据通过 FFmpegRTMPRecorder 发送出去，但是不成功，只有声音，没有画面。
+2. 使用 MediaCodec 的Surface 作为录屏输入，此输入数据已经是 h264 压缩格式，无法传送给 FFmpegRTMPRecorder，没有测试成功；
+3. 使用 FFmpegRTMPRecorder 录屏推流没有成功，成功的例子是使用腾讯直播SDK，见我的另一个例子：https://github.com/smartsharp/TestTencentRtmp。
+4. 使用心得： https://www.jianshu.com/p/2e21d81b350c
+
+
+
+
+
+
+
+
+
+
 # RtmpRecoder
 
 Record camera and push stream to rtmp server.
